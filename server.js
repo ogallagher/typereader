@@ -23,13 +23,15 @@ try {
 	var wifi = os.networkInterfaces().en0;
 	var ip = '127.0.0.1'
 
-	for (var key of Object.keys(wifi)) {
-		var info = wifi[key]
+	if (wifi) {
+		for (var key of Object.keys(wifi)) {
+			var info = wifi[key]
 	
-		//ipv4 and nonloopback
-		if (info.family == 'IPv4' && info.internal == false) {
-			ip = info.address
-			break
+			//ipv4 and nonloopback
+			if (info.family == 'IPv4' && info.internal == false) {
+				ip = info.address
+				break
+			}
 		}
 	}
 
