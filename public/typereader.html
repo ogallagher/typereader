@@ -1,0 +1,579 @@
+<!doctype html>
+<html>
+	<head>
+        <meta charset="UTF-8">
+        <!--scales viewport depending on worldspace device width-->
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        <title>Typereader</title>
+        
+		<!-- jquery -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        
+        <script src="typereader.js"></script>
+        
+        <link rel="stylesheet" type="text/css" href="typereader.css" />
+	</head>
+	
+	<body>
+		<h1>Typereader</h1>
+		
+		<article>
+			<div id="metadata" class="section clear">
+				<p class="subtitle">
+					a keystroke authenticator
+				</p>
+				<p style="text-align:center;">
+					by <strong>Owen Gallagher</strong>
+					<i><br>April 2020
+					<br>Security Engineering
+					<br>Prof. Thomas</i>
+				</p>
+			</div>
+			
+			<div id="index" 
+				 style="border-width:1px 0px 0px 0px;border-color:white;border-style:solid;margin-bottom:8px;padding:8px;">
+				<div class="row">
+					<a href="#typereader" class="index-entry">Try Me!</a>
+					<a href="#intro" class="index-entry">Background</a>
+					<a href="#evaluation-methodology" class="index-entry">Algorithm Evaluation Methodology</a>
+					<a href="#algorithms" class="index-entry">Comparison of Selected Algorithms</a>
+					<a href="#evaluation-results" class="index-entry">Evaluation Results</a>
+					<a href="#objectives-approach" class="index-entry">Objectives and Approach for Typereader</a>
+					<a href="#conclusion" class="index-entry">Conclusion and Usage Notes</a>
+					<a href="#bibliography" class="index-entry">Sources</a>
+				</div>
+			</div>
+			
+			<div id="typereader" class="section">
+				<h2>
+					Try Me!
+				</h2>
+				
+				<div>
+					<h3><strong>Current Registered Users:</strong></h3>
+					<ul id="users-list" style="list-style:none outside none;">
+						
+					</ul>
+				</div>
+				
+				<div id="form">
+					<p id="directions" class="legible">
+						TBD
+					</p>
+					
+					<p id="input-container" class="legible">
+						<input id="input" type="text" placeholder="tbd" autocomplete="off"/>
+					</p>
+				</div>
+				
+				<p id="buttons">
+					<button id="login" type="button" style="margin:8px 16px;">
+						login
+					</button>
+					<button id="register" type="button" style="margin:8px 16px;">
+						register
+					</button>
+				</p>
+				
+				<p id="cancel-buttons" style="text-align:center;">
+					<button id="cancel" type="button" style="margin:8px 16px;">
+						cancel
+					</button>
+				</p>
+				
+				<div id="data" class="legible">
+				</div>				
+			</div>
+			
+			<div id="intro" class="section clear">
+				<h2>
+					Background
+				</h2>
+				
+				<p class="legible">
+					<strong>Keystroke dynamics</strong> is the analysis of typing rhythm, which can be used to 
+					<strong>identify</strong> typers, and then <strong>recognize</strong> them later on. It can 
+					be thought of as a kind of biometric with potential for use as a credential, with a number of
+					<strong>advantages</strong> and <strong>drawbacks</strong>.
+				</p>
+				
+				<p class="legible">
+					In favor of keystroke signature is that the user does not have to <strong>memorize</strong> a password. 
+					This is an advantage shared by all biometric credential systems. In fact, depending on the
+					implementation, a keystroke authenticator might allow the user to type
+					anything as long as if fits certain criteria (minimum length, for example). Another advantage
+					of keystroke signature is the difficulty someone would have to <strong>spoof</strong> it (duplicate another
+					user's signature by typing in the same fasion). Additionally, doing the authentication only
+					requires minimal <strong>equipment</strong> that the user have access to a way of typing, 
+					which is an essential component of almost any computational device.
+				</p>
+				
+				<p class="legible">
+					However, there also a number drawbacks to keystroke dynamics that help explain why it 
+					is <strong>not</strong> generally used for authentication yet. <strong>Firstly,</strong> there will be a
+					formidable number of <strong>"goats"</strong> if the user base grows too large; very young
+					and very old users would likely have very <strong>inconsistent</strong> keystroke patterns,
+					much in the same way that a child might change their handwritten signature multiple times
+					as they mature their handwriting, or that an older user might have difficulty with fine
+					motor skills. And that doesn't even consider users without hands or adequate use of
+					their hands to be able to type. <strong>Secondly,</strong> it may be difficult to spoof a keystroke
+					signature, but certainly <strong>not impossible</strong>. An attacker could use a
+					keystroke logger or ask the victim to type something and then analyze the keystrokes to
+					obtain an accurate copy of that victim's signature. It would then be a matter of <strong>reproducing</strong>
+					those keystrokes (physically or through software) at the authenticator terminal for
+					the attacker to succeed. <strong>Thirdly,</strong> as with all biometrics, keystroke
+					signature ideally is a <strong>"what you are"</strong> credential, meaning it is 
+					fixed and <strong>permanent</strong> for a given person. The implications of this mean that if that signature
+					is compromised, then that user has no way of getting a new one.
+				</p>
+				
+				<p class="legible">
+					<strong>Fourthly,</strong> the accuracy of keystroke authentication systems (aka. 
+					keystroke dynamics anomaly detectors) has not reached an acceptable minimum.
+					The European standards for access control systems as published by <strong>CENELEC</strong> (EN-50133-1)
+					require that (note that <strong>"positive"</strong> means the test keystrokes are an anomaly, as in they
+					<strong>do not match</strong> the user's keystroke signature they're trying to authenticate against, and
+					<strong>"negative"</strong> means that the test keystrokes <strong> do match</strong> the signature they're being
+					tested against):
+					
+					<ol>
+						<li>
+							The false negative rate (FNR, fraud error) should be less than 0.001%;<br><strong>FNR &lt; 0.00001</strong>
+						</li>
+						<li>
+							The false positive rate (FPR, insult error) should be less than 1%;<br><strong>FPR &lt; 0.01</strong>
+						</li>
+					</ol>
+				</p>
+			</div>
+			
+			<div id="evaluation-methodology" class="section">
+				<h2>
+					Algorithm Evaluation Methodology
+				</h2>
+				
+				<p class="legible">
+					There have been many attempts to create algorithms that can quickly and accurately create a 
+					keystroke signature for users. In the next section are a list of some that were thoroughly tested and
+					evaluated against each other in 
+					<a href="https://www.cs.cmu.edu/~maxion/pubs/KillourhyMaxion09.pdf">this paper by K. Kollourhy and R. Maxion</a>.
+				</p>
+				
+				<p class="legible">
+					They're research was heavily focused on comparison and being able to objectively determine which of the
+					anomaly detection algorithms that they analyzed was the <strong>best</strong>. To do so, they needed to
+					standardize the process. They started by only considering algorithms that created a keystroke signature
+					from a password (as opposed to a sentence, paragraph, etc). A major hurdle that prevented them from 
+					simply comparing the results of past experiments was the <strong>variety</strong> between
+					each; different experiments used different feature sets, password lengths, password reps (number of
+					repetitions during training needed to create the user's signature), user and time outlier filtering,
+					number of attempts allowed during authentication, static vs. dynamic keystroke signatures, and
+					thresholds for positive/negative classification, among other factors. Kollourhy and Maxion did their 
+					algorithm comparison by implementing each and doing their own tests, controlling all of these variables:
+					
+					<ul>
+						<li>
+							The <strong>same</strong> 51 users/participants were used for identification/training and testing.
+						</li>
+						<li>
+							Each user typed <strong>400 reps</strong> of a password to create their signature, in 8 sessions, each spaced
+							24 hours apart, each containing 50 correct typings of the password.
+						</li>
+						<li>
+							One password was used for all users: <strong>".tie5Roanl"</strong>, being a typical representation 
+							of strong a password (having more than 7 chars, upper and lower case, letters, punctuation).
+						</li>
+						<li>
+							All users used the same keyboard and computer.
+						</li>
+						<li>
+							They collected the key event types (press, release), timestamps, and key names for each sample, 
+							including the ENTER key. These features were then compiled into a timing vector, being a point
+							in p-space, where each feature was an axis, and where a keystroke signature was made up of a
+							cloud of these sample points in p-space.
+						</li>
+					</ul>
+				</p>
+				
+				<div id="roc-chart" class="float">
+					<img src="killourhy_maxion_roc_example.png" alt="Example ROC Chart" width="400px"/>
+					<p class="caption">
+						Fig. 1: Example ROC Chart (Killourhy and Maxion)
+					</p>
+				</div>
+				
+				<p class="legible">
+					To determine the anomaly detection algorithm with the best accuracy they calculated the
+					<strong>Receiver Operating Characteristic</strong>, or <strong>ROC</strong> of each. This value is
+					determined by first testing the algorithm against a sample of imposter and legitimate password
+					entries, and calculating the
+					<strong>True Positive Rate (TPR)</strong> and
+					<strong>False Positive Rate (FPR)</strong> along a set of thresholds, to test the trade-off
+					between detecting imposters (TPR) and rejecting legitimates (FPR). The point corresponding to each
+					threshold is plotted in a graph, as seen in <a href="#roc-chart">Figure 1</a>.
+				</p>
+				<p class="legible subtitle">
+					ROC = FPR/TPR = X/Y
+				</p>
+				<p class="legible">
+					The best algorithm would touch the upper left corner at (0,1), having an ROC of
+				</p>
+				<p class="legible subtitle">
+					X/Y = 0/1 = 0.00
+				</p>
+				<p class="legible">
+					As can be seen in the example ROC
+					graph, the best threshold is close to the point marked <strong>equal-error</strong>. This is a
+					threshold technique that essentially makes X equal to Y in the ROC graph.
+				</p>
+				<p class="legible">
+					Their research included many algorithms (14), but I've chosen to compare my favorites in the next
+					section, curated according to difference in <strong>approach</strong> and <strong>accuracy</strong>
+					according to the final evaluation.
+				</p>
+			</div>
+			
+			<div id="algorithms" class="section clear end-float">
+				<h2>
+					Comparison of Selected Algorithms
+				</h2>
+				<p class="row">
+					<div class="half-width">
+						<strong>Euclidean</strong>
+					</div>
+					<div class="half-width">
+						This is the most basic algorithm for anomaly detection. Given an entry is a typed password with
+						a given length in p-space, each feature being an axis, the entry being a point. The training
+						data for determining a keystroke signature is a cloud of these points. The center of this
+						cloud is the signature, <strong>X</strong>. Authentication (or anomaly detection) consists of
+						finding the euclidean <strong>distance</strong> between the test point <strong>Q</strong>
+						and <strong>X</strong>. A distance above the threshold is anomalous, or an imposter.
+					</div>
+				</p>
+				<hr>
+				<p id="manhattan" class="row">
+					<div class="half-width">
+						<strong>Manhattan</strong>
+					</div>
+					<div class="half-width">
+						Manhattan, uses much of the same criteria and setup as the Euclidean algorithm,
+						except that the distance <strong>|Q-X|</strong> is measured in manhattan distance, being the
+						scalar sum of all components in the euclidean distance vector. The researchers Kollourhy and Maxion
+						used an improved version of this algorithm by dividing each component of the manhattan distance vector
+						by the <strong>standard deviation</strong> of that feature in the training set.
+					</div>
+				</p>
+				<hr>
+				<p class="row">
+					<div class="half-width">
+						<strong>Mahalanobis</strong>
+					</div>
+					<div class="half-width">
+						Again, Mahalanobis is much like Euclidean, while considering, in addition to Euclidean distance, the
+						difference between the <strong>covariance matrix</strong> of Q and X as well. This has the added benefit
+						of controlling for features that were very inconsistent when training the signature.
+					</div>
+				</p>
+				<hr>
+				<p class="row">
+					<div class="half-width">
+						<strong>Nearest Neighbor</strong>
+					</div>
+					<div class="half-width">
+						Instead of using the distance <strong>|Q-X|</strong>, Nearest Neighbor uses the distance
+						<strong>|Q-K|</strong>, where <strong>K</strong> is the point in the signature point cloud
+						closest to <strong>Q</strong>.
+					</div>
+				</p>
+				<hr>
+				<p class="row">
+					<div class="half-width">
+						<strong>Autoassociative Neural Network (AANN)</strong>
+					</div>
+					<div class="half-width">
+						The features vector for a training entry is passed to the input layer in the
+						neural net, which then trains to generate an identical vector as output. This neural
+						network is specific for that user, and can therefore generate near-identical feature
+						vectors if the given vector was generated by the legitimate user. Anomalies are
+						determined by measuring the distance between <strong>Q</strong> and the vector generated
+						by the AANN, <strong>Q'</strong>.
+					</div>
+				</p>
+				<hr>
+				<p class="row">
+					<div class="half-width">
+						<strong>Z-Score</strong>
+					</div>
+					<div class="half-width">
+						The Z-Score algorithm uses the statistical technique of measuring the z-score of
+						every feature in the test entry against each feature in the signature, where the
+						z-score is <strong>|Qi - Xi| / Sxi</strong>, <strong>Sxi</strong> being the
+						standard deviation of that feature in the signature point cloud.
+					</div>
+				</p>
+				<hr>
+			</div>
+			
+			<div id="evaluation-results" class="section">
+				<h2>
+					Evaluation Results (ROC at equal-error threshold)
+				</h2>
+				
+				<p class="row">
+					<div class="half-width">
+						<strong>Manhattan (scaled)</strong>
+					</div>
+					<div class="half-width">
+						<span class="subtitle">0.096</span> [best]
+					</div>
+				</p>
+				<hr>
+				<p class="row">
+					<div class="half-width">
+						<strong>Nearest Neighbor</strong>
+					</div>
+					<div class="half-width">
+						<span class="subtitle">0.100</span>
+					</div>
+				</p>
+				<hr>
+				<p class="row">
+					<div class="half-width">
+						<strong>Z-Score</strong>
+					</div>
+					<div class="half-width">
+						<span class="subtitle">0.102</span>
+					</div>
+				</p>
+				<hr>
+				<p class="row">
+					<div class="half-width">
+						<strong>Mahalanobis</strong>
+					</div>
+					<div class="half-width">
+						<span class="subtitle">0.110</span>
+					</div>
+				</p>
+				<hr>
+				<p class="row">
+					<div class="half-width">
+						<strong>Autoassociative Neural Network (AANN)</strong>
+					</div>
+					<div class="half-width">
+						<span class="subtitle">0.161</span>
+					</div>
+				</p>
+				<hr>
+				<p class="row">
+					<div class="half-width">
+						<strong>Euclidean</strong>
+					</div>
+					<div class="half-width">
+						<span class="subtitle">0.171</span>
+					</div>
+				</p>
+				<hr>
+			</div>
+			
+			<div id="objectives-approach" class="section clear">
+				<h2>
+					Objectives and Approach for Typereader
+				</h2>
+				
+				<p class="legible">
+					As a final step in this investigation I wanted to try making my <strong>own</strong> keystroke
+					authentication system: <strong>Typereader</strong>. Ideally, I could then compare my own attempt
+					with the results listed above. The issue is that doing an experiment under the same conditions
+					as those in the Kollourhy and Maxion study is not possible for me: I'm not looking for <strong>50</strong>
+					test subjects, each to enter a password <strong>400</strong> times to create their signatures, and then
+					authenticating and measuring the ROC scores for each threshold.
+				</p>
+				
+				<p class="legible">
+					What I've decided to do instead is, informed by the results of these experiments I have cited
+					and studied, to create my own authentication system <strong>without</strong> worring about evaluation against
+					a baseline or testing it properly. I'll then publish it here for the reader to do play with,
+					critique, and perhaps extend or remix. With that in mind, here's my approach:
+				</p>
+				
+				<ul class="legible">
+					<li>
+						Define a user's keystroke signature by having them enter a series of <strong>words</strong> that come
+						to mind according to a two-letter prompt. The prompt assures that the signature definition
+						includes at least <strong>n</strong> samples of each feature and <strong>f</strong> features,
+						and the liberty for the user to choose their own words allows them to type things they have more practice
+						typing, and for which they likely have a more <strong>unique</strong> typing rhythm.
+					</li>
+					<li>
+						A feature in a typed entry is the elapsed from from the press of key <strong>k</strong>
+						to the press of key <strong>k+1</strong>.
+					</li>
+					<li>
+						Instead of each feature being associated with a character position in the typed password,
+						features are associated with <strong>2-char sequences</strong> (ex: a->a, a->b, ... z->z).
+					</li>
+					<li>
+						Valid keys for a feature are the <strong>alphanumeric</strong> keys, <strong>punctuation</strong>
+						keys, and <strong>SHIFT</strong> key. Whitespace will not be allowed, as well as special
+						ALT characters (greek letters, symbols, etc).
+					</li>
+					<li>
+						Once a user's signature is defined and associated with a username, subsequent attempts to
+						authenticate against that keystroke signature will use the <a href="#manhattan">Scaled Manhattan</a>
+						algorithm as described above. Since I will not test to find a good threshold and don't want to
+						pick one arbitrarily, Typereader will return the <strong>anomaly score</strong> of the test entry
+						against the signature (high=imposter, low=legitimate). This score won't mean anything on its own,
+						but it can be used <strong>relative</strong> to other logins for comparison.
+					</li>
+				</ul>
+			</div>
+			
+			<div id="conclusion" class="section">
+				<h2>
+					Conclusion and Usage Notes
+				</h2>
+				
+				<p class="legible">
+					In the end I did manage to create a keystroke authentication system with <strong>Typereader</strong>,
+					using the Manhattan algorithm and controlling for feature standard deviation. I also added a division by
+					the number of features, to normalize between different signatures possibly having different numbers
+					of features. Otherwise, since manhattan distance between vectors increases with each additional component,
+					signatures with higher numbers of features would require much higher thresholds.
+				</p>
+				
+				<p class="legible">
+					Though I've not been able to test the effectiveness of this authenticator, I'm fairly certain it's
+					ROC score and other measures of accuracy would be pretty <strong>low</strong>. Even though I used 
+					essentially the same <strong>algorithm</strong> as the best anomaly detector from the paper I cited,
+					there are a number of other factors that I changed. The data collection phase when determining a new
+					user's keystroke signature is probably more prone to <strong>outlier data</strong>, since the user has
+					complete freedom to choose the word contexts in which those keystrokes appear. The sampling method is
+					also much quicker and leads to less reliable feature statistics (Typereader only samples each feature
+					5 times, though this can be changed). Lastly, the features themselves are essentially
+					<strong>contextless</strong> because they only correspond to the time difference between two consecutive
+					keys, and not a particular position in a password. This weakness, leading to further variability and
+					lower true positive rates, could be much improved by making features correspond to groups of three
+					or four characters instead of just two. For example:
+					
+					<p class="subtitle">"ef" = 80ms</p>
+					
+					could become
+					
+					<p class="subtitle">"cdef" = 80ms</p>
+					
+					where the additional keys give more context and consistency in the data collection phase, but the
+					associated time lapse still refers to the time between the <strong>e</strong> and <strong>f</strong>
+					keys.
+				</p>
+				
+				<p class="legible">
+					Here's a list of some parameters that can be changed in <strong>typereader.js</strong> to modify
+					how keystroke signatures are created:
+					
+					<ul>
+						<li>
+							<strong>FAV_WORDS</strong><br>
+							This determines how many initial entries are required of the user before features are picked
+							for the final signature.
+						</li>
+						<li>
+							<strong>FEATURE_SAMPLE_SIZE</strong><br>
+							How many samples of a feature (character combination and time elapsed) are taken before a
+							signature can calculate the mean and standard deviation.
+						</li>
+						<li>
+							<strong>SIGNATURE_SIZE</strong><br>
+							How many different features are included in a signature. Since my manhattan algorithm divides
+							the anomaly score by the number of features, this should prevent from theoretically having to
+							change thresholds for different signature sizes.
+						</li>
+					</ul>	
+				</p>
+				
+				<p class="legible">
+					And here's a list of important files in the project:
+					
+					<ul>
+						<li>
+							<strong>typereader.html</strong><br>
+							This file; the research report and an implemented keystroke authenticator.
+						</li>
+						<li>
+							<strong>typereader.js</strong><br>
+							The code for Typereader that handles authentication and everything interactive
+							in the <a href="#typereader">Try Me</a> section.
+						</li>
+						<li>
+							<strong>typereader.css</strong><br>
+							The style rules that governs most of the presentation of this page.
+						</li>
+						<li>
+							<strong>server.js</strong><br>
+							This serves the html page via node (run <strong>"node server.js"</strong> to host the
+							page on port <strong>55555</strong>), and also handles new user registration.
+						</li>
+						<li>
+							<strong>users.json</strong><br>
+							This is the file where user signatures are stored on registration. This file only
+							works in tandem with Typereader if the page is hosted from the server.
+						</li>
+					</ul>
+				</p>
+			</div>
+			
+			<div id="bibliography" class="section clear">
+				<h2>Sources</h2>
+				
+				<p id="sources-list">
+					<p>
+						<a href="https://www.cs.cmu.edu/~maxion/pubs/KillourhyMaxion09.pdf">
+							K. Killourhy and R. Maxion.
+							<strong>"Comparing Anomaly-Detection Algorithms for Keystroke Dynamics"</strong>.
+							<i>International Conference on Dependable Systems & Networks (DSN-09)</i>.
+							pp. 125-134, Estoril, Lisbon, Portugal, 29 June to 02 July 2009. IEEE Computer
+							Society Press, Los Alamitos, California, 2009.
+						</a>
+					</p>
+					
+					<p>
+						<a href="">
+							CENELEC. <strong>"European Standard EN 50133-1: Alarm systems"</strong>. <i>Access control systems for
+							use in security applications. Part 1: System requirements, 2002. Standard Number
+							EN 50133-1:1996/A1:2002, Technical Body CLC/TC 79</i>. European Committee for
+							Electrotechnical Standardization (CENELEC).
+						</a>
+					</p>
+					
+					<p>
+						<a href="https://ntrl.ntis.gov/NTRL/dashboard/searchResults/titleDetail/ADA047645.xhtml">
+							G. Forsen, M. Nelson, and R. Staron, Jr. <strong>"Personal attributes authentication 
+							techniques"</strong>. <i>Technical Report RADC-TR-77-333</i>, Rome Air Development Center, October 1977.
+						</a>
+					</p>
+					
+					<p>
+						<a href="https://en.wikipedia.org/wiki/Receiver_operating_characteristic">
+							<strong>"Receiver Operating Characteristic"</strong>.
+							<i>Wikipedia</i>
+						</a>
+					</p>
+				</p>
+			</div>
+			
+			<div id="index" 
+				 style="border-width:1px 0px 0px 0px;border-color:white;border-style:solid;margin-bottom:8px;padding:8px;">
+				<div class="row">
+					<a href="#typereader" class="index-entry">Try Me!</a>
+					<a href="#intro" class="index-entry">Background</a>
+					<a href="#evaluation-methodology" class="index-entry">Algorithm Evaluation Methodology</a>
+					<a href="#algorithms" class="index-entry">Comparison of Selected Algorithms</a>
+					<a href="#evaluation-results" class="index-entry">Evaluation Results</a>
+					<a href="#objectives-approach" class="index-entry">Objectives and Approach for Typereader</a>
+					<a href="#conclusion" class="index-entry">Conclusion and Usage Notes</a>
+					<a href="#bibliography" class="index-entry">Sources</a>
+				</div>
+			</div>
+		</article>
+	</body>
+</html>

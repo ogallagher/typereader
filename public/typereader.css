@@ -1,0 +1,187 @@
+body {
+	background-color: rgb(24,24,24); /* dark gray */
+	font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+}
+
+body * {
+	margin-bottom: 8px;
+	font-size: 14pt;
+	text-align: justify;
+	color: rgb(245,141,113); /* coral */
+}
+
+h1 {
+	background-color: #555;
+	color: white;
+	font-size: 24pt;
+	text-align: center;
+	padding: 16px 0px;
+}
+
+h2 {
+	color: #ddd;
+	font-size: 18pt;
+	text-align: left;
+	padding: 8px 0px;
+}
+
+.section {
+	background-color: #333;
+	padding: 4px 64px 8px 64px;
+}
+
+strong, strong * {
+	color: rgb(143,157,106); /* seaweed */
+}
+
+.legible {
+	line-height: 20pt;
+}
+
+a {
+	color: #aaa;
+	text-decoration: none;
+}
+
+a:hover {
+	color: #eee;
+	text-decoration: underline;
+}
+
+a:visited {
+	color: #999;
+	text-decoration: none;
+}
+
+li {
+	color: rgb(249,257,153); /* mustard */
+	font-size: 16pt;
+	margin-left: 16px;
+	margin-bottom: 20px;
+}
+
+li * {
+	font-size: 16pt;
+}
+
+.subtitle {
+	color: rgb(249,257,153); /* mustard */
+	text-align: center;
+	margin-top: 4px;
+}
+
+.caption {
+	color: rgb(249,257,153); /* mustard */
+	text-align: center;
+	margin-top: 0px;
+	margin-bottom: 0px;
+	font-size: 10pt;
+}
+
+.clear {
+	background-color: transparent;
+}
+
+.row {
+	text-align: center;
+}
+
+@media only screen and (min-width: 770px) {
+	/* desktop */
+	.float {
+		float: right;
+		padding: 4px;
+		margin-top: 8px;
+		border-width: 1px;
+		border-color: white;
+		border-style: solid;
+		margin-left: 20px;
+	}
+	
+	.half-width {
+		display: inline-block;
+		width: 48%;
+		vertical-align: top;
+		margin-bottom: 0px;
+	}
+	
+	.third-width {
+		display: inline-block;
+		width: 29%;
+		vertical-align: top;
+		margin-bottom: 0px;
+		text-align: left;
+	}
+}
+@media not screen and (min-width: 770px) {
+	/* mobile */
+	.float {
+		float: none;
+		display: block;
+		padding: 16px;
+		border-width: 0px 1px 0px 1px;
+		border-color: white;
+		border-style: solid;
+		text-align: center;
+	}
+	
+	.half-width {
+		display: block;
+		vertical-align: top;
+		margin-bottom: 8px;
+	}
+	
+	.third-width {
+		display: block;
+		vertical-align: top;
+		margin-bottom: 8px;
+	}
+}
+
+.end-float {
+	clear: both;
+}
+
+.index-entry {
+	padding: 0px 4px 0px 4px;
+	margin: 4px 16px 4px 16px;
+	display: inline-block;
+}
+
+#input-container {
+}
+
+input {
+	border-radius: 4px;
+	border-style: none;
+	padding: 8px;
+	background: black;
+	color: rgb(143,157,106); /* seaweed */
+	font-weight: bold;
+	width: 100%;
+}
+
+button {
+	border-radius: 4px;
+	border-style: none;
+	background: black;
+	padding: 8px;
+	font-weight: bold;
+	font-size: 18pt;
+	color: white;
+}
+
+button:hover {
+	background: #555;
+	color: black;
+}
+
+#data {
+	border-width: 1px 0px;
+	border-color: white;
+	border-style: solid;
+}
+
+#buttons {
+	text-align: center;
+}

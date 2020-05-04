@@ -1,0 +1,22 @@
+{
+  "name": "typereader",
+  "version": "1.0.0",
+  "description": "Owen Gallagher's keystroke dynamics tool that creates and authenticates users using a username and keystroke signature as the only credentials.",
+  "main": "typereader.js",
+  "scripts": {
+    "test": "node server.js"
+  },
+  "keywords": [
+    "keystroke",
+    "dynamics",
+    "security",
+    "authentication",
+    "biometrics",
+    "undergraduate"
+  ],
+  "author": "Owen Gallagher",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
