@@ -17,7 +17,7 @@
   "author": "Owen Gallagher",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.19.2",
+    "express": "^4.20.0",
     "os": "^0.1.1"
   }
 }
