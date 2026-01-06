@@ -4,6 +4,7 @@
   "description": "Owen Gallagher's keystroke dynamics tool that creates and authenticates users using a username and keystroke signature as the only credentials.",
   "main": "typereader.js",
   "scripts": {
+    "start-forever": "forever start server.js",
     "start": "node server.js"
   },
   "keywords": [
@@ -20,5 +21,8 @@
     "dotenv": "^17.2.3",
     "express": "^4.22.1",
     "os": "^0.1.1"
+  },
+  "optionalDependencies": {
+    "forever": "^4.0.3"
   }
 }
