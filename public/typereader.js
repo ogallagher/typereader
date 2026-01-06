@@ -9,6 +9,9 @@ let buttons
 let cancel_buttons
 let cancel
 
+// TODO compile BASE_PATH from backend env into frontend
+const BASE_PATH = '/typereader'
+
 const FAV_WORDS = 15				//how many favorite words from which to pick best features (I pick 15)
 const FEATURE_SAMPLE_SIZE = 5		//how many measurements are in a feature sample (I pick 5)
 const SIGNATURE_SIZE = 10			//how many features are in a keystroke_signature (I pick 10)
@@ -372,7 +375,7 @@ function do_cancel(e) {
 
 function get_users() {
 	$.get({
-		url: '/users',
+		url: `${BASE_PATH}/users`,
 		success: function(data) {
 			users = data
 			console.log(users)
@@ -391,7 +394,7 @@ function get_users() {
 
 function send_new_user() {
 	$.get({
-		url: '/newuser',
+		url: `${BASE_PATH}/newuser`,
 		data: {
 			username: username,
 			signature: signature.features

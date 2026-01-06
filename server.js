@@ -10,14 +10,20 @@ Serves typereader, a keystroke dynamics authentication program.
 try {
 	const fs = require('fs')
 	const express = require('express')
+
+	require('dotenv').config()
+
 	const app = express()
 
 	app.set('port', (process.env.PORT || 55555))
 	const port = app.get('port')
 
-	app.use(express.static('public', {
-		index: 'typereader.html'
-	}))
+	app.use(
+		process.env.BASE_PATH || '/',
+		express.static('public', {
+			index: 'typereader.html'
+		})
+	)
 
 	const os = require('os')
 	var wifi = os.networkInterfaces().en0;
@@ -34,11 +40,6 @@ try {
 			}
 		}
 	}
-
-	//listen for client connections
-	app.listen(port, function() {
-		console.log('Testing server is running at ' + ip + ':' + port)
-	})
 
 	let users = {}
 	fs.readFile('./users.json', function(err, data) { 
@@ -60,14 +61,14 @@ try {
 		}
 	}); 
 
-	//send current users
-	app.get('/users', function(req,res) {
+	// send current users
+	app.get(`${process.env.BASE_PATH || ''}/users`, function(req,res) {
 		console.log('sending users list')
 		res.send(users)
 	})
 
-	//handle new user
-	app.get('/newuser', function(req,res) {
+	// handle new user
+	app.get(`${process.env.BASE_PATH || ''}/newuser`, function(req,res) {
 		var user = req.query
 		console.log('adding new user')
 		console.log(user)
@@ -83,6 +84,11 @@ try {
 				res.send('good')
 			}
 		})
+	})
+
+	//listen for client connections
+	app.listen(port, function() {
+		console.log('Testing server is running at ' + ip + ':' + port)
 	})
 }
 catch (err) {
